@@ -14,7 +14,7 @@ export function releasePlan(g,now=C.today()){
  const st=gameStats(g),negative=g.reviews.filter(r=>r.sentiment==='negative'),tips=[];
  if(g.status==='published'){if(negative.length)tips.push(`มีรีวิวเชิงลบ ${negative.length} รายการ ตรวจประเด็นซ้ำและอัปเดตแก้ไขก่อนแคมเปญถัดไป`);tips.push('วางส่วนลดหลังแพตช์ที่แก้ปัญหาหลัก และเทียบช่วงกิจกรรมที่ตรงกลุ่มผู้เล่นใน Steamworks');}
  else {if(!g.milestones.length)tips.push('เพิ่มงานที่เหลือและชั่วโมงโดยประมาณ เพื่อคำนวณเวลาพัฒนาได้แม่นขึ้น');if(earliest)tips.push(`จากงานที่เหลือ ${hours} ชั่วโมง ทำสัปดาห์ละ ${g.weeklyHours} ชั่วโมง และเผื่อทดสอบ ${g.bufferDays} วัน คาดว่าพร้อมไม่ก่อน ${C.dateText(earliest)}`);if(earliest&&g.release<earliest)tips.push(`แผนเดิม ${C.dateText(g.release)} เร็วกว่าความพร้อม ควรเลื่อนไปอย่างน้อย ${C.dateText(earliest)}`);if(!st.last)tips.push('เพิ่ม Wishlist และผู้เข้าชมอย่างน้อยสองวันที่ต่างกัน เพื่อดูแนวโน้มก่อนตัดสินใจเปิดขาย');if(!g.demoReady)tips.push('เตรียมเดโมและรับฟีดแบ็กก่อนยืนยันวันเผยแพร่');if(!g.storeReady)tips.push('เตรียมหน้าร้าน รูปปก วิดีโอ และรายละเอียดให้ครบก่อนเริ่มแคมเปญ');}
- if(st.budgetLeft<0)tips.push(`ต้นทุนเกินงบ ${C.fmt(-st.budgetLeft)} บาท ทบทวนขอบเขตงานก่อนเพิ่มค่าใช้จ่าย`);
+ if(g.budgetSet!==false&&st.budgetLeft<0)tips.push(`ต้นทุนเกินงบ ${C.fmt(-st.budgetLeft)} บาท ทบทวนขอบเขตงานก่อนเพิ่มค่าใช้จ่าย`);
  if(st.last&&st.previous){const days=C.days(st.previous.date,st.last.date),delta=st.last.wishlists-st.previous.wishlists;if(days>0)tips.push(`Wishlist เปลี่ยน ${delta>=0?'+':''}${delta.toLocaleString('th-TH')} ใน ${days} วัน เฉลี่ย ${(delta/days).toFixed(1)} ต่อวัน`);}
  return {hours,weeks,earliest,date,tips};
 }
@@ -37,5 +37,7 @@ export function validate(s){
  if(s?.version!==2)throw Error('ไฟล์นี้ต้องเป็นข้อมูลสมุดเงินรุ่น 2');C.validateState({...s,version:1});
  const cents=(n)=>{if(!Number.isSafeInteger(n)||n<0||n>999999999999)throw Error('จำนวนเงินในไฟล์ไม่ถูกต้อง');};
  for(const g of s.games){if(!Array.isArray(g.ledger)||!validDate(g.start)||!validDate(g.release)||!Number.isFinite(g.weeklyHours)||g.weeklyHours<=0||!Number.isFinite(g.bufferDays)||g.bufferDays<0)throw Error('ข้อมูลเกมไม่ครบ');if(!Number.isFinite(g.fee)||g.fee<0||g.fee>100||!Number.isFinite(g.refund)||g.refund<0||g.refund>100)throw Error('อัตราหักของเกมไม่ถูกต้อง');for(const e of g.ledger){cents(e.amount);if(!validDate(e.date)||!['income','expense'].includes(e.type))throw Error('รายการเกมไม่ถูกต้อง');}for(const m of g.milestones)if(!Number.isFinite(m.hours)||m.hours<0||!validDate(m.due))throw Error('แผนงานไม่ถูกต้อง');for(const r of g.snapshots)if(!validDate(r.date)||[r.views,r.wishlists,r.units].some(n=>!Number.isSafeInteger(n)||n<0))throw Error('สถิติไม่ถูกต้อง');if(g.image&&!/^data:image\/(png|jpeg|webp);base64,/.test(g.image))throw Error('รูปปกไม่รองรับ');}
+ for(const t of s.transactions)if(t.evidence&&!/^data:image\/(png|jpeg|webp);base64,/.test(t.evidence))throw Error("หลักฐานไม่รองรับ");
+ for(const d of s.debts){if(d.creditLimit!==undefined)cents(d.creditLimit);if(d.started&&!validDate(d.started))throw Error("วันเริ่มหนี้ไม่ถูกต้อง");}
  return s;
 }
