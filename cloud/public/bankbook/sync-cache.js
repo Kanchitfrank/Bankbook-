@@ -1,0 +1,5 @@
+// Keep the acknowledged baseline outside localStorage so cover images do not use
+// the device's small localStorage quota twice. The editable draft stays local.
+function open(){return new Promise((resolve,reject)=>{const request=indexedDB.open('kanchit-sync-baseline',1);request.onupgradeneeded=()=>request.result.createObjectStore('baseline');request.onerror=()=>reject(request.error);request.onsuccess=()=>resolve(request.result);});}
+export async function storeBaseline(userId,revision,base){const db=await open();try{await new Promise((resolve,reject)=>{const tx=db.transaction('baseline','readwrite');tx.objectStore('baseline').put({revision,base},userId);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);});}finally{db.close();}}
+export async function loadBaseline(userId){const db=await open();try{return await new Promise((resolve,reject)=>{const request=db.transaction('baseline').objectStore('baseline').get(userId);request.onsuccess=()=>resolve(request.result||null);request.onerror=()=>reject(request.error);});}finally{db.close();}}
