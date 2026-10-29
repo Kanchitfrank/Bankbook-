@@ -120,7 +120,7 @@ function renderSync(){
  if(mode==='conflict'&&cloud?.conflict){detail=`พบการแก้รายการเดียวกัน ${cloud.conflict.paths.length} จุด ระบบหยุดส่งไว้เพื่อให้คุณตรวจเลือก`;actions=B('ตรวจและเลือกรุ่นข้อมูล','cloud-conflict','primary')+B('สำรองข้อมูลเครื่องนี้','export');}
  if(mode==='offline'||mode==='error'||mode==='reconnecting')actions=B('ลองเชื่อมต่ออีกครั้ง','cloud-retry');
  if(mode==='sign-in')actions='<a class="btn primary" href="/signin-with-chatgpt?return_to=%2Fbankbook%2Findex.html" target="_top">ลงชื่อเข้าใช้ ChatGPT</a>';
- if(mode==='static'){detail='GitHub Pages ไม่มีฐานข้อมูลของแอป ใช้เว็บหลักเพื่อซิงก์ทุกเครื่อง และนำเข้าไฟล์สำรองเพื่อย้ายข้อมูลที่กรอกในหน้านี้';actions='<a class="btn primary" href="https://kornchit-money-notebook.kanfrankchot.chatgpt.site/" target="_blank" rel="noopener">เปิดเว็บเรียลไทม์ ↗</a>';}
+ if(mode==='static'){detail='GitHub Pages ไม่มีฐานข้อมูลของแอป ใช้เว็บหลักเพื่อซิงก์ทุกเครื่อง และนำเข้าไฟล์สำรองเพื่อย้ายข้อมูลที่กรอกในหน้านี้';actions='<a class="btn primary" href="https://kanchit-money-notebook.kanfrankchot.chatgpt.site/" target="_blank" rel="noopener">เปิดเว็บเรียลไทม์ ↗</a>';}
  slot.innerHTML=`<section class="sync-bar" data-state="${mode}" role="status"><div><strong><span class="sync-dot"></span>${labels[mode]||'สถานะซิงก์'}</strong><p>${E(detail)}</p></div>${actions?'<div class="actions">'+actions+'</div>':''}</section>`;
 }
 function showCloudConflict(){
@@ -149,4 +149,5 @@ void cloud.start();
 window.addEventListener('online',()=>{if(cloud.ready){cloud.connect();void cloud.pull();void cloud.flush();}else void cloud.start();});
 window.addEventListener('offline',()=>cloud.status('offline'));
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){if(cloud.ready)void cloud.pull();else if(!cloud.migration)void cloud.start();}});
+
 
