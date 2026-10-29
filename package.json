@@ -1,1 +1,9 @@
-{"name":"kanchit-bankbook","private":true,"type":"module","scripts":{"test":"node --test test.mjs sync.test.mjs","dev":"node tools/serve.mjs"}}
+{
+  "name": "kanchit-bankbook",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test test.mjs sync.test.mjs experiments.test.mjs debt-plan.test.mjs",
+    "dev": "node tools/serve.mjs"
+  }
+}

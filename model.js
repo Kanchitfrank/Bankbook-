@@ -1,3 +1,4 @@
+import {validatePlan} from './debt-plan.js';
 import * as C from './core.js';
 export const KEY='kanchit-bankbook-v2';
 export const RESET='kanchit-clean-start-20261029';
@@ -38,6 +39,6 @@ export function validate(s){
  const cents=(n)=>{if(!Number.isSafeInteger(n)||n<0||n>999999999999)throw Error('จำนวนเงินในไฟล์ไม่ถูกต้อง');};
  for(const g of s.games){if(!Array.isArray(g.ledger)||!validDate(g.start)||!validDate(g.release)||!Number.isFinite(g.weeklyHours)||g.weeklyHours<=0||!Number.isFinite(g.bufferDays)||g.bufferDays<0)throw Error('ข้อมูลเกมไม่ครบ');if(!Number.isFinite(g.fee)||g.fee<0||g.fee>100||!Number.isFinite(g.refund)||g.refund<0||g.refund>100)throw Error('อัตราหักของเกมไม่ถูกต้อง');for(const e of g.ledger){cents(e.amount);if(!validDate(e.date)||!['income','expense'].includes(e.type))throw Error('รายการเกมไม่ถูกต้อง');}for(const m of g.milestones)if(!Number.isFinite(m.hours)||m.hours<0||!validDate(m.due))throw Error('แผนงานไม่ถูกต้อง');for(const r of g.snapshots)if(!validDate(r.date)||[r.views,r.wishlists,r.units].some(n=>!Number.isSafeInteger(n)||n<0))throw Error('สถิติไม่ถูกต้อง');if(g.image&&!/^data:image\/(png|jpeg|webp);base64,/.test(g.image))throw Error('รูปปกไม่รองรับ');}
  for(const t of s.transactions)if(t.evidence&&!/^data:image\/(png|jpeg|webp);base64,/.test(t.evidence))throw Error("หลักฐานไม่รองรับ");
- for(const d of s.debts){if(d.creditLimit!==undefined)cents(d.creditLimit);if(d.started&&!validDate(d.started))throw Error("วันเริ่มหนี้ไม่ถูกต้อง");}
+ for(const d of s.debts){if(d.installments!==undefined)validatePlan(d.installments);if(d.creditLimit!==undefined)cents(d.creditLimit);if(d.started&&!validDate(d.started))throw Error("วันเริ่มหนี้ไม่ถูกต้อง");}
  return s;
 }
