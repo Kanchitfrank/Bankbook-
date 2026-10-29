@@ -11,7 +11,8 @@ export const days=(a,b)=>Math.round((Date.parse(b+'T12:00:00+07:00')-Date.parse(
 export function addMonths(d,n,anchor=Number(d.slice(8,10))){let [y,m]=d.split('-').map(Number);const dt=new Date(Date.UTC(y,m-1+n,1));y=dt.getUTCFullYear();m=dt.getUTCMonth()+1;const day=Math.min(anchor,new Date(Date.UTC(y,m,0)).getUTCDate());return `${y}-${String(m).padStart(2,'0')}-${String(day).padStart(2,'0')}`;}
 export function emptyState(){return {version:1,accounts:[],transactions:[],bills:[],debts:[],goals:[],games:[],holdings:[],profile:{income:0,living:0,reserveMonths:3,risk:'low'},loan:{amount:10000000,apr:12,months:36,ratio:35},updatedAt:null};}
 export function balances(s){const b=Object.fromEntries(s.accounts.map(a=>[a.id,a.opening]));for(const t of s.transactions){if(t.type==='transfer'){b[t.accountId]=(b[t.accountId]||0)-t.amount;b[t.toAccountId]=(b[t.toAccountId]||0)+t.amount;}else b[t.accountId]=(b[t.accountId]||0)+(t.type==='income'?t.amount:-t.amount);}return b;}
-export function outstanding(s,d){return Math.max(0,(d.repaymentTotal??d.principal)-s.transactions.filter(t=>t.debtId===d.id).reduce((a,t)=>a+(d.repaymentTotal!==undefined?(t.amount||0):(t.principal||0)),0));}
+export function debtScheduledTotal(d){const rows=d.installments||[];return rows.some(r=>r.amount!==null&&r.amount!==undefined)?rows.reduce((n,r)=>n+(r.amount||0),0):(d.repaymentTotal??d.principal);}
+export function outstanding(s,d){return Math.max(0,debtScheduledTotal(d)-s.transactions.filter(t=>t.debtId===d.id).reduce((a,t)=>a+(t.amount||0),0));}
 export const debtTotal=s=>s.debts.filter(d=>!d.closed).reduce((a,d)=>a+outstanding(s,d),0);
 export const totalCash=s=>Object.values(balances(s)).reduce((a,b)=>a+b,0);
 export const totalReserved=s=>s.goals.reduce((a,g)=>a+g.saved,0);
