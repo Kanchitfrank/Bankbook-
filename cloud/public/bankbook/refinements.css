@@ -4,3 +4,5 @@
 
 [hidden]{display:none!important}
 
+
+.debt-grip{touch-action:none;user-select:none;cursor:grab}.debt-dragging{opacity:.65;outline:2px solid #f5ce48}.debt-drop{outline:3px dashed #365fa1}
