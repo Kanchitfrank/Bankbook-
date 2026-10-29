@@ -14,3 +14,5 @@
 .cards{align-items:start}.cards>.panel{margin-top:0;height:auto;align-self:start}
 
 .task-deadline{display:block;color:#456594;font-weight:700;margin-bottom:4px}.task-star{font-size:20px;line-height:1;padding:7px 9px}.task-star.is-important{color:#926900;background:#fff4c7;border-color:#e8c64c}
+
+.task-window{margin-top:10px}.task-window table{font-size:11px}.task-window .metric-row{font-size:11px}.task-window small{display:block;line-height:1.7}

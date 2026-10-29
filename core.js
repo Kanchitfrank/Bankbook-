@@ -1,5 +1,5 @@
 export const KEY='kornchit-notebook-v1';
-export const categories=['อาหารและเครื่องดื่ม','เดินทาง','ที่พักและสาธารณูปโภค','สุขภาพ','ของใช้ส่วนตัว','พัฒนาเกม','ลงทุน','หนี้สิน','เงินออม','รายได้ประจำ','รายได้จากเกม','รายได้อื่น','อื่น ๆ'];
+export const categories=['กดเงินสด','ฝากเงินเข้าธนาคาร','อาหารและเครื่องดื่ม','เดินทาง','ที่พักและสาธารณูปโภค','สุขภาพ','ของใช้ส่วนตัว','พัฒนาเกม','ลงทุน','หนี้สิน','เงินออม','รายได้ประจำ','รายได้จากเกม','รายได้อื่น','อื่น ๆ'];
 export const uid=()=>globalThis.crypto.randomUUID();
 export const today=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 export function money(v){const s=String(v??'').trim().replace(/,/g,'');if(!/^-?\d+(\.\d{1,2})?$/.test(s))throw Error('ใส่จำนวนเงินเป็นตัวเลข ทศนิยมไม่เกิน 2 ตำแหน่ง');const n=Math.round(Number(s)*100);if(!Number.isSafeInteger(n)||Math.abs(n)>999999999999)throw Error('จำนวนเงินเกินขอบเขตที่รองรับ');return n;}
