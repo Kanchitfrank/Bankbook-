@@ -4,6 +4,7 @@ const $=s=>document.querySelector(s),E=v=>String(v??'').replace(/[&<>"']/g,c=>({
 const money=n=>'฿ '+C.fmt(Math.round(n)),num=n=>Number(n||0).toLocaleString('th-TH'),when=v=>v?new Intl.DateTimeFormat('th-TH',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Bangkok'}).format(new Date(v)):'ยังไม่มีการอัปเดต';
 let s=M.fresh(),storageError='',resetDone=false;
 try{if(!localStorage.getItem(M.RESET)){localStorage.removeItem(C.KEY);localStorage.setItem(M.RESET,'1');resetDone=true;}const raw=localStorage.getItem(M.KEY);if(raw)s=M.validate(JSON.parse(raw));}catch(err){storageError='อ่านข้อมูลไม่ได้: '+err.message+' กรุณาตรวจไฟล์สำรองก่อนบันทึกข้อมูลใหม่';}
+let lastSavedRaw;try{lastSavedRaw=localStorage.getItem(M.KEY);}catch{lastSavedRaw=null;}
 let page='overview',accountId='',gameId='',goalId='',gameTab='summary',filter='',modalPreviousFocus=null,undoState=null;
 const pages={overview:'ภาพรวม',transactions:'รายการเงิน',accounts:'บัญชีของฉัน',games:'พัฒนาเกม',bills:'ค่าใช้จ่ายประจำ',debts:'หนี้สิน',goals:'เป้าหมาย',planning:'วางแผนชีวิต',settings:'ข้อมูลและการเชื่อมต่อ'};
 const subtitles={overview:'สวัสดี Kanchit วันนี้เงินของคุณเป็นอย่างไรบ้าง',transactions:'บันทึกและตรวจสอบรายรับรายจ่าย',accounts:'ทุกบัญชี รวมเงินสด ดูรายการย้อนหลังได้ในที่เดียว',games:'บัญชีและผู้ช่วยวางแผนสำหรับนักพัฒนาเกม',bills:'ครบกำหนดเมื่อไร ค่อยกดบันทึกว่าจ่ายแล้ว',debts:'รู้ว่าติดหนี้ใคร เหลือเท่าไร และจะคืนเมื่อไร',goals:'วางแผนสิ่งที่อยากได้ ด้วยเงินที่เก็บไหว',planning:'วางแผนเงินใช้ เงินเก็บ และภาระผ่อน',settings:'สำรองข้อมูล ย้ายเครื่อง และจัดการการเชื่อมต่อ'};
@@ -23,7 +24,7 @@ const badge=(text,color='')=>`<span class="badge ${color}">${E(text)}</span>`;
 const metric=(name,value)=>`<div class="metric-row"><span>${name}</span><strong>${value}</strong></div>`;
 const notice=(message,color='')=>`<div class="notice ${color}">${message}</div>`;
 function stats(items){return `<div class="grid stats-grid">${items.map(([label,value,hint=''],i)=>`<div class="stat ${i===0?'featured':''}"><div class="stat-top">${label}</div><div class="amount">${value}</div><small>${hint}</small></div>`).join('')}</div>`;}
-function persist(){s.updatedAt=M.updated();localStorage.setItem(M.KEY,JSON.stringify(s));storageError='';}
+function persist(){if(localStorage.getItem(M.KEY)!==lastSavedRaw)throw Error('ข้อมูลเปลี่ยนจากอีกแท็บ กรุณารีเฟรชก่อนบันทึก');s.updatedAt=M.updated();const raw=JSON.stringify(s);localStorage.setItem(M.KEY,raw);lastSavedRaw=raw;storageError='';}
 function toast(message){$('#toast').textContent=message;$('#toast').classList.add('show');setTimeout(()=>$('#toast').classList.remove('show'),3800);}
 function mutate(fn,message='บันทึกแล้ว'){const before=structuredClone(s);try{fn();persist();undoState=before;render();toast(message);}catch(err){s=before;throw err;}}
 function closeModal(){if($('#modal-root').innerHTML){$('#modal-root').innerHTML='';document.body.style.overflow='';modalPreviousFocus?.focus?.();}}
