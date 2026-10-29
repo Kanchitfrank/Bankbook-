@@ -78,7 +78,7 @@ export class RealtimeSync {
   const merged=mergeDocuments(conflict.base,conflict.local,conflict.remote,prefer);
   let document=merged.document;
   try{validate(document);}catch{document=copy(prefer==='remote'?conflict.remote:conflict.local);validate(document);}
-  this.base=copy(conflict.remote);this.revision=conflict.revision;this.conflict=null;this.applyRemote(document);this.remember();this.connect();this.schedule();
+  this.base=copy(conflict.remote);this.revision=conflict.revision;this.conflict=null;this.status('pending');this.applyRemote(document);this.remember();this.connect();this.schedule();
  }
  enqueue(){if(this.conflict){this.conflict.local=copy(this.getLocal());this.status('conflict');return;}if(!this.ready){if(this.mode==='connecting'||this.mode==='offline')this.status('pending','รอเชื่อมต่อเพื่อส่งข้อมูล');return;}this.schedule();}
  schedule(){if(!this.ready||this.closed||this.conflict||this.migration)return;

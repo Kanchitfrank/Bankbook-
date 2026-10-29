@@ -111,13 +111,13 @@ function renderSync(){
  const labels={connecting:'กำลังเชื่อมคลาวด์',synced:'เรียลไทม์ · ซิงก์แล้ว',pending:'บันทึกในเครื่องแล้ว · รอส่ง',saving:'กำลังบันทึกขึ้นคลาวด์',offline:'ออฟไลน์ · ข้อมูลรอส่งในเครื่อง',reconnecting:'กำลังต่อการเชื่อมต่อใหม่',migration:'พบข้อมูลเดิมในเครื่องนี้',conflict:'มีข้อมูลที่แก้พร้อมกัน',static:'รุ่น GitHub Pages · ข้อมูลเฉพาะเครื่อง',error:'ส่งข้อมูลไม่สำเร็จ','sign-in':'ลงชื่อเข้าใช้เพื่อซิงก์','account-changed':'บัญชีที่ลงชื่อเข้าใช้เปลี่ยนไป'};
  let detail=cloud?.message||((mode==='synced'&&cloud?.lastAt)?'อัปเดตล่าสุด '+when(cloud.lastAt):'มือถือและคอมต้องใช้บัญชี ChatGPT เดียวกัน');
  let actions='';
- if(mode==='migration'){
+ if(mode==='migration'&&cloud?.migration){
   const count=v=>['accounts','transactions','games','bills','debts','goals','holdings'].reduce((n,k)=>n+(v?.[k]?.length||0),0);
   detail=`ข้อมูลเครื่องนี้ ${count(s)} รายการ · คลาวด์ ${count(cloud.migration.remote.document)} รายการ รวมตามรหัสรายการและตรวจข้อมูลที่แก้ชนกันก่อนส่ง`;
   actions=B('รวมข้อมูลเครื่องนี้กับคลาวด์','cloud-merge','primary')+B('ใช้ข้อมูลคลาวด์','cloud-use')+B('สำรองข้อมูลเครื่องนี้','export');
  }
  if(mode==='account-changed'){detail='ข้อมูลในเครื่องเป็นของบัญชีก่อนหน้า กรุณาสำรองก่อนสลับมาใช้ข้อมูลบัญชีปัจจุบัน ระบบจะไม่ส่งข้อมูลข้ามบัญชีเอง';actions=B('สำรองข้อมูลเครื่องนี้','export')+B('ใช้ข้อมูลบัญชีปัจจุบัน','cloud-use','primary');}
- if(mode==='conflict'){detail=`พบการแก้รายการเดียวกัน ${cloud.conflict.paths.length} จุด ระบบหยุดส่งไว้เพื่อให้คุณตรวจเลือก`;actions=B('ตรวจและเลือกรุ่นข้อมูล','cloud-conflict','primary')+B('สำรองข้อมูลเครื่องนี้','export');}
+ if(mode==='conflict'&&cloud?.conflict){detail=`พบการแก้รายการเดียวกัน ${cloud.conflict.paths.length} จุด ระบบหยุดส่งไว้เพื่อให้คุณตรวจเลือก`;actions=B('ตรวจและเลือกรุ่นข้อมูล','cloud-conflict','primary')+B('สำรองข้อมูลเครื่องนี้','export');}
  if(mode==='offline'||mode==='error'||mode==='reconnecting')actions=B('ลองเชื่อมต่ออีกครั้ง','cloud-retry');
  if(mode==='sign-in')actions='<a class="btn primary" href="/signin-with-chatgpt?return_to=%2Fbankbook%2Findex.html" target="_top">ลงชื่อเข้าใช้ ChatGPT</a>';
  if(mode==='static'){detail='GitHub Pages ไม่มีฐานข้อมูลของแอป ใช้เว็บหลักเพื่อซิงก์ทุกเครื่อง และนำเข้าไฟล์สำรองเพื่อย้ายข้อมูลที่กรอกในหน้านี้';actions='<a class="btn primary" href="https://kornchit-money-notebook.kanfrankchot.chatgpt.site/" target="_blank" rel="noopener">เปิดเว็บเรียลไทม์ ↗</a>';}
